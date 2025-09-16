@@ -117,7 +117,7 @@ def _calculate_timestamp_statistics(data):
                     'parsed_timestamp': timestamp
                 })
             except ValueError:
-                print(f"❌ Error: {ValueError}")
+                print(f"Error: {ValueError}")
 
     if len(timestamped_items) < 2:
         return {

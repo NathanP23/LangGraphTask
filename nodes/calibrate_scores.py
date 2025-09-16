@@ -136,7 +136,7 @@ def calibrate_scores(state):
         if not state.errors:
             state.errors = []
         state.errors.append(f"calibrate_scores: Failed to calibrate scores - {str(e)}")
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     return state
 

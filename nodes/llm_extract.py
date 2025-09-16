@@ -148,7 +148,7 @@ def llm_extract(state):
         if not state.errors:
             state.errors = []
         state.errors.append(f"llm_extract: LLM analysis failed - {str(e)}")
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     return state
 

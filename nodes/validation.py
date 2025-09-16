@@ -121,7 +121,7 @@ def _is_valid_timestamp(timestamp_str):
             datetime.strptime(timestamp_str.strip(), fmt)
             return True
         except ValueError:
-            print(f"❌ Error: {ValueError}")
+            print(f"Error: {ValueError}")
 
     return False
 

@@ -91,7 +91,7 @@ def structure_from_text(state):
         if not state.errors:
             state.errors = []
         state.errors.append(f"structure_from_text: LLM call failed - {str(e)}")
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
 
     return state

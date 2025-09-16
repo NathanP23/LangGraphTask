@@ -187,18 +187,18 @@ def test_structure_extraction():
         result = structure_from_text(state)
 
         if result.structured_data:
-            print(f"✅ Success: Extracted {len(result.structured_data)} structured messages")
+            print(f"Success: Extracted {len(result.structured_data)} structured messages")
             print(f"First extracted message:")
             print(f"  Speaker: {result.structured_data[0]['speaker']}")
             print(f"  Text: {result.structured_data[0]['text'][:80]}...")
             print(f"  Type: {result.structured_data[0]['type']}")
         else:
-            print(f"❌ Failed: No structured data extracted")
+            print(f"Failed: No structured data extracted")
             if result.errors:
                 print(f"Errors: {result.errors}")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     return True
 
@@ -207,11 +207,11 @@ def test_graph_creation():
     try:
         print("Creating communication health graph...")
         graph = create_communication_health_graph()
-        print("✅ Graph created successfully!")
+        print("Graph created successfully!")
         return True
 
     except Exception as e:
-        print(f"❌ Error creating graph: {e}")
+        print(f"Error creating graph: {e}")
         return False
 
 def debug_three_cases():
@@ -232,13 +232,13 @@ def debug_three_cases():
     from comm_health_graph import analyze_structured_data
     try:
         report1 = analyze_structured_data(structured_data)
-        print(f"✅ Success: Got report")
+        print(f"Success: Got report")
         if report1:
             print(f"  Summary: {report1['summary'][:100]}...")
             print(f"  Overall score: {report1['overall_health']['score']} ({report1['overall_health']['label']})")
             print(f"  Dimensions: {list(report1['dimensions'].keys())}")
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     # Case 2: User specifies "this is raw text"
     print(f"\nCASE 2: User calls analyze_raw_text()")
@@ -253,10 +253,10 @@ def debug_three_cases():
     from comm_health_graph import analyze_raw_text
     try:
         report2 = analyze_raw_text(raw_text)
-        print(f"✅ Success: Got report")
+        print(f"Success: Got report")
         # print(f"Report keys: {list(report2.keys()) if report2 else 'None'}")
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     # Case 3: User doesn't specify - auto-detect with structured data
     print(f"\nCASE 3A: User calls analyze_communication_health() with structured data")
@@ -267,10 +267,10 @@ def debug_three_cases():
     from comm_health_graph import analyze_communication_health
     try:
         report3a = analyze_communication_health(structured_data)
-        print(f"✅ Success: Auto-detected as structured, got report")
+        print(f"Success: Auto-detected as structured, got report")
         # print(f"Report keys: {list(report3a.keys()) if report3a else 'None'}")
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     # Case 3: User doesn't specify - auto-detect with raw text
     print(f"\nCASE 3B: User calls analyze_communication_health() with raw text")
@@ -280,10 +280,10 @@ def debug_three_cases():
 
     try:
         report3b = analyze_communication_health(raw_text)
-        print(f"✅ Success: Auto-detected as raw text, got report")
+        print(f"Success: Auto-detected as raw text, got report")
         # print(f"Report keys: {list(report3b.keys()) if report3b else 'None'}")
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     print(f"\n" + "=" * 50)
     print("Debug complete! All cases tested.")
@@ -318,6 +318,6 @@ if __name__ == "__main__":
     success = test_graph_creation()
 
     if success:
-        print("\n🎉 All tests passed! Foundation is solid.")
+        print("\nAll tests passed! Foundation is solid.")
     else:
-        print("\n💥 Graph creation failed. Check imports and dependencies.")
+        print("\nGraph creation failed. Check imports and dependencies.")

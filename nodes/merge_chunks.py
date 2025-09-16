@@ -102,7 +102,7 @@ def merge_chunks(state):
         if not state.errors:
             state.errors = []
         state.errors.append(f"merge_chunks: Failed to merge insights - {str(e)}")
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     return state
 

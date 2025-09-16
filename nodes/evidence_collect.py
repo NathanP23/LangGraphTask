@@ -108,7 +108,7 @@ def evidence_collect(state):
         if not state.errors:
             state.errors = []
         state.errors.append(f"evidence_collect: Failed to collect evidence - {str(e)}")
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     return state
 

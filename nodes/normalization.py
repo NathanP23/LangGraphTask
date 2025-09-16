@@ -99,7 +99,7 @@ def _parse_timestamp(timestamp_str):
             dt = datetime.strptime(timestamp_str.strip(), fmt)
             return dt.isoformat()
         except ValueError:
-            print(f"❌ Error: {ValueError}")
+            print(f"Error: {ValueError}")
 
     return timestamp_str  # Return original if can't parse
 
