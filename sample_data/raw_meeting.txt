@@ -1,0 +1,25 @@
+Project Manager: Good morning everyone, thanks for joining today's sprint planning session. Let's review what we accomplished last sprint and plan for the next two weeks.
+
+Sarah: Hi everyone! Last sprint went really well on the frontend side. We completed the user dashboard and the new navigation menu. Performance improvements are also looking good.
+
+Mike: Great work Sarah! On the backend, we finished the API authentication system and deployed the new database schema. However, we're still seeing some latency issues with the user queries.
+
+Project Manager: Thanks Mike. What's causing the latency issues?
+
+Mike: It looks like our database indexes aren't optimized for the new query patterns. I think we need to spend some time this sprint on database optimization.
+
+Sarah: That makes sense. Should I hold off on the advanced user features until the performance issues are resolved?
+
+Project Manager: Good question. What do you think, Mike? Can you give us a timeline estimate?
+
+Mike: I'd say give me 3-4 days to optimize the queries and indexes. After that, Sarah can proceed with the advanced features without performance concerns.
+
+Sarah: Perfect! I can use those days to work on the mobile responsive design we've been postponing.
+
+Project Manager: Excellent plan. So our sprint goals are: Mike owns database optimization by Thursday, Sarah handles mobile responsiveness, and then we tackle advanced user features. Any blockers or concerns?
+
+Mike: No blockers on my end. I have everything I need.
+
+Sarah: Same here, looks good to go!
+
+Project Manager: Great! Let's plan to check in mid-week to see how we're progressing. Thanks everyone!

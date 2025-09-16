@@ -1,0 +1,38 @@
+[
+  {
+    "ts": "2025-09-12T09:15:00Z",
+    "speaker": "Sarah Chen",
+    "text": "Hi team, I wanted to follow up on yesterday's product roadmap discussion. Are we still on track for the Q4 launch? I'm a bit concerned about the timeline.",
+    "kind": "email"
+  },
+  {
+    "ts": "2025-09-12T11:42:00Z", 
+    "speaker": "Mike Rodriguez",
+    "text": "> Are we still on track for the Q4 launch?\n\nHonestly, I think we're being overly optimistic. The authentication system alone needs at least 3 more weeks. What if we postpone to Q1?",
+    "kind": "email"
+  },
+  {
+    "ts": "2025-09-12T13:20:00Z",
+    "speaker": "Sarah Chen", 
+    "text": "I understand your concern, but we've already committed to stakeholders. Can we compromise and launch with basic auth, then enhance it in Q1? Mike, would you be able to scope what's truly minimum viable?",
+    "kind": "email"
+  },
+  {
+    "ts": "2025-09-12T14:35:00Z",
+    "speaker": "Alex Kim",
+    "text": "Jumping in here - I can take on the frontend auth integration if Mike focuses on backend. That might speed things up. Sarah, should I start working on wireframes for the simplified flow?",
+    "kind": "email"
+  },
+  {
+    "ts": "2025-09-12T15:10:00Z",
+    "speaker": "Mike Rodriguez",
+    "text": "That would be amazing, Alex! Yes, let's do basic OAuth only - no custom registration flows. I can have the backend ready by next Friday if we scope it down. Sarah, let's schedule a design review for Monday?",
+    "kind": "email"
+  },
+  {
+    "ts": "2025-09-12T15:25:00Z",
+    "speaker": "Sarah Chen",
+    "text": "Perfect! I'll send calendar invites for Monday 2 PM. Alex - wireframes by end of week? Mike - backend OAuth by next Friday? I'll update the stakeholder timeline to reflect our new approach.",
+    "kind": "email"
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "ts": "2025-09-11T14:00:00Z",
+    "speaker": "Jennifer Walsh",
+    "text": "Alright everyone, thanks for joining the sprint retrospective. Let's start with what went well this sprint. Tom, want to kick us off?",
+    "kind": "meeting"
+  },
+  {
+    "ts": "2025-09-11T14:00:15Z", 
+    "speaker": "Tom Bradley",
+    "text": "Sure, I think the new deployment pipeline saved us tons of time. We went from 2-hour releases to 20 minutes. Really happy with that improvement.",
+    "kind": "meeting"
+  },
+  {
+    "ts": "2025-09-11T14:00:45Z",
+    "speaker": "Lisa Park",
+    "text": "Agreed on the pipeline! Also, the daily standups felt much more focused this sprint. People actually stuck to the 15-minute limit.",
+    "kind": "meeting"
+  },
+  {
+    "ts": "2025-09-11T14:01:10Z",
+    "speaker": "Jennifer Walsh", 
+    "text": "Great points. Now, what didn't go well? I'll be honest - I felt like we had too many interruptions from urgent bug reports. It derailed our planned work.",
+    "kind": "meeting"
+  },
+  {
+    "ts": "2025-09-11T14:01:35Z",
+    "speaker": "Carlos Mendez",
+    "text": "Yeah, those production issues were brutal. Three different P0 bugs in one week? That's not normal. I wonder if our testing coverage is lacking somewhere.",
+    "kind": "meeting"
+  },
+  {
+    "ts": "2025-09-11T14:02:00Z",
+    "speaker": "Tom Bradley",
+    "text": "I can look into the test coverage this week. But honestly, two of those bugs were from edge cases that would be really hard to catch in testing.",
+    "kind": "meeting"
+  },
+  {
+    "ts": "2025-09-11T14:02:30Z",
+    "speaker": "Lisa Park",
+    "text": "What if we implement better monitoring instead? Catch issues before they become P0s? I've been looking at some APM tools that might help.",
+    "kind": "meeting"
+  },
+  {
+    "ts": "2025-09-11T14:02:55Z",
+    "speaker": "Jennifer Walsh",
+    "text": "I like that direction. Lisa, can you research APM options and present 2-3 recommendations next week? Tom, focus on test coverage analysis. Carlos, anything you want to own?",
+    "kind": "meeting"
+  },
+  {
+    "ts": "2025-09-11T14:03:20Z",
+    "speaker": "Carlos Mendez", 
+    "text": "I'll work on documenting our incident response process. It felt chaotic last week - we need clearer escalation paths. Should have it ready by Friday.",
+    "kind": "meeting"
+  },
+  {
+    "ts": "2025-09-11T14:03:45Z",
+    "speaker": "Jennifer Walsh",
+    "text": "Excellent. So action items: Lisa on APM research, Tom on test coverage, Carlos on incident docs. All due next Friday. Thanks everyone, great retro!",
+    "kind": "meeting"
+  }
+]
