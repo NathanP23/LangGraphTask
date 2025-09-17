@@ -13,7 +13,9 @@ def validate_schema(state):
     """Validate data against expected schema."""
     reporter = state.get_reporter()  # Create reporter once for all helper functions
 
-    state.add_log("Validating schema and data integrity...")
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] VALIDATION: Checking data integrity...")
 
     # Check if we have data to validate
     data_to_validate = state.validated_data or state.structured_data
@@ -50,7 +52,10 @@ def validate_schema(state):
 
     # Update state with validated data
     state.validated_data = valid_items
-    state.add_log(f"Schema validation completed. {len(valid_items)} items validated successfully.")
+    if invalid_count > 0:
+        state.add_log(f"✓ [{state.current_step}/{state.total_steps}] VALIDATION: {len(valid_items)} items passed validation, {invalid_count} failed")
+    else:
+        state.add_log(f"✓ [{state.current_step}/{state.total_steps}] VALIDATION: All {len(valid_items)} items passed validation")
 
     return state
 

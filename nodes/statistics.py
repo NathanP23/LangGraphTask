@@ -5,12 +5,14 @@ from config import QUESTION_PATTERNS
 
 def basic_stats_full(state):
     """Calculate basic statistics including response times (with timestamps)."""
+    reporter = state.get_reporter()  # Create reporter once for all helper functions
 
-    print("Calculating full basic statistics...")
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] STATISTICS: Calculating metrics with timestamps...")
+
     if not state.validated_data:
-        if not state.errors:
-            state.errors = []
-        state.errors.append("statistics: No validated data for analysis")
+        state.add_error("statistics: No validated data for analysis")
         return state
 
     stats = _calculate_base_statistics(state.validated_data)

@@ -6,15 +6,18 @@ from config import (DIMENSION_WEIGHTS, HEALTH_SCORE_THRESHOLDS, CONFIDENCE_FACTO
 
 def calibrate_scores(state):
     """Calibrate final health scores by combining all analysis components."""
+    reporter = state.get_reporter()  # Create reporter once for all helper functions
+
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] CALIBRATE_SCORES: Computing final health scores...")
 
     # Check required data
     required_attrs = ['basic_stats', 'merged_insights', 'evidence']
     missing_attrs = [attr for attr in required_attrs if not hasattr(state, attr)]
 
     if missing_attrs:
-        if not state.errors:
-            state.errors = []
-        state.errors.append(f"calibrate_scores: Missing required data: {missing_attrs}")
+        state.add_error(f"calibrate_scores: Missing required data: {missing_attrs}")
         return state
 
     try:
@@ -131,12 +134,11 @@ def calibrate_scores(state):
 
         # Store calibrated scores in state
         state.calibrated_scores = calibrated_scores
+        state.add_log(f"✓ [{state.current_step}/{state.total_steps}] CALIBRATE_SCORES: Health scores computed (Overall: {calibrated_scores['overall_health_score']:.1f}/10)")
 
     except Exception as e:
-        if not state.errors:
-            state.errors = []
-        state.errors.append(f"calibrate_scores: Failed to calibrate scores - {str(e)}")
-        print(f"Error: {e}")
+        state.add_error(f"calibrate_scores: Failed to calibrate scores - {str(e)}")
+        state.add_log(f"✗ [{state.current_step}/{state.total_steps}] CALIBRATE_SCORES: Failed to calibrate scores - {str(e)}")
 
     return state
 

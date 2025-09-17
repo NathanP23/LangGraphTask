@@ -5,25 +5,30 @@ def detect_input_type(state):
     """Detect whether input is raw text or structured data and set routing flags."""
     reporter = state.get_reporter()  # Create reporter once for all helper functions
 
-    state.add_log("Detecting input type...", 0)
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] INPUT_DETECTION: Analyzing input type...")
 
     # Check if we have raw text input
     if state.raw_input and not state.structured_data:
-        state.add_log("Raw text input detected.", 0)
         state.is_raw_text = True
         # For raw text, try to detect if it contains timestamps
         state.has_timestamps = _contains_timestamps(reporter, state.raw_input)
+        timestamps_info = "timestamps found" if state.has_timestamps else "no timestamps"
+        state.add_log(f"✓ [{state.current_step}/{state.total_steps}] INPUT_DETECTION: Raw text detected ({len(state.raw_input)} chars, {timestamps_info})")
 
     # Check if we have structured data
     elif state.structured_data and not state.raw_input:
-        state.add_log("Structured data input detected.", 0)
         state.is_raw_text = False
         # Check if structured data has timestamp fields
         state.has_timestamps = _has_timestamp_fields(reporter, state.structured_data)
+        timestamps_info = "timestamps found" if state.has_timestamps else "no timestamps"
+        state.add_log(f"✓ [{state.current_step}/{state.total_steps}] INPUT_DETECTION: Structured data detected ({len(state.structured_data)} items, {timestamps_info})")
 
     # Error case - no input provided
     elif not state.raw_input and not state.structured_data:
         state.add_error("No input provided - need either raw_input or structured_data")
+        state.add_log(f"✗ [{state.current_step}/{state.total_steps}] INPUT_DETECTION: No input provided")
         state.is_raw_text = False
         state.has_timestamps = False
 
@@ -32,6 +37,7 @@ def detect_input_type(state):
         state.add_error("Both raw_input and structured_data provided - defaulting to structured_data")
         state.is_raw_text = False
         state.has_timestamps = _has_timestamp_fields(reporter, state.structured_data)
+        state.add_log(f"⚠ [{state.current_step}/{state.total_steps}] INPUT_DETECTION: Both inputs provided, using structured data")
 
     return state
 

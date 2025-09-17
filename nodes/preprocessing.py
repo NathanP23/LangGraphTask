@@ -7,7 +7,9 @@ def dedupe_threads(state):
     """Remove duplicate messages and collapse quoted emails."""
     reporter = state.get_reporter()  # Create reporter once for all helper functions
 
-    state.add_log("Deduplicating threads...")
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] PREPROCESSING: Deduplicating and cleaning data...")
 
     if not state.validated_data:
         state.add_error("dedupe_threads: No validated data to process")
@@ -44,7 +46,8 @@ def dedupe_threads(state):
 
     # Update state with deduplicated data
     state.validated_data = deduplicated_data
-    state.add_log(f"Deduplication completed. {len(deduplicated_data)} items remaining from original set.")
+    original_count = len([item for item in state.validated_data if item]) if state.validated_data else 0
+    state.add_log(f"✓ [{state.current_step}/{state.total_steps}] PREPROCESSING: {len(deduplicated_data)} items after deduplication")
 
     return state
 
@@ -121,7 +124,8 @@ def chunk_if_needed(state):
     """Split large conversations into manageable chunks."""
     reporter = state.get_reporter()  # Create reporter once for all helper functions
 
-    state.add_log("Chunking data if needed...")
+    # Note: This shares the same step as dedupe_threads since they're both preprocessing
+    state.add_log(f"[{state.current_step}/{state.total_steps}] PREPROCESSING: Checking if chunking needed...")
     if not state.validated_data:
         state.add_error("chunk_if_needed: No validated data to process")
         return state
@@ -138,8 +142,8 @@ def chunk_if_needed(state):
 
     # If total tokens are under limit, no chunking needed
     if total_tokens <= MAX_CHUNK_TOKENS:
-        state.add_log(f"No chunking needed. Total tokens ({total_tokens}) under limit ({MAX_CHUNK_TOKENS})")
         state.chunks = [state.validated_data]
+        state.add_log(f"✓ [{state.current_step}/{state.total_steps}] PREPROCESSING: No chunking needed ({total_tokens} tokens)")
         return state
 
     # Split into chunks
@@ -171,7 +175,7 @@ def chunk_if_needed(state):
 
     # Store chunks in state
     state.chunks = chunks
-    state.add_log(f"Chunking completed. Created {len(chunks)} chunks from {len(state.validated_data)} messages.")
+    state.add_log(f"✓ [{state.current_step}/{state.total_steps}] PREPROCESSING: Created {len(chunks)} chunks from {len(state.validated_data)} messages")
 
     # Add chunk information to state for reporting
     chunk_info = {

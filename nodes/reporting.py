@@ -4,12 +4,15 @@ from config import (ACTION_KEYWORDS, DECISION_KEYWORDS, MAX_EXTRACTED_ITEMS,
 
 def generate_report(state):
     """Generate natural language explanation of health scores."""
+    reporter = state.get_reporter()  # Create reporter once for all helper functions
+
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] REPORTING: Generating comprehensive health report...")
 
     # Check for required analysis components
     if not state.calibrated_scores or not state.merged_insights:
-        if not state.errors:
-            state.errors = []
-        state.errors.append("report: Missing calibrated scores or merged insights for report generation")
+        state.add_error("report: Missing calibrated scores or merged insights for report generation")
         return state
 
     scores = state.calibrated_scores
@@ -62,10 +65,16 @@ def generate_report(state):
         report["statistics"]["conversation_duration_minutes"] = stats.get('conversation_duration')
 
     state.report = report
+    state.add_log(f"✓ [{state.current_step}/{state.total_steps}] REPORTING: Health report generated with {len(report.get('recommendations', []))} recommendations")
     return state
 
 def finalize_output(state):
     """Format final output with schema, version, and metadata."""
+    reporter = state.get_reporter()  # Create reporter once for all helper functions
+
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] FINALIZE_OUTPUT: Preparing final report format...")
 
     if not state.report:
         # Create minimal report if none exists
@@ -84,6 +93,7 @@ def finalize_output(state):
         "pipeline_errors": state.errors or []
     }
 
+    state.add_log(f"✓ [{state.current_step}/{state.total_steps}] FINALIZE_OUTPUT: Report finalized and ready for output")
     return state
 
 def _generate_summary(stats):

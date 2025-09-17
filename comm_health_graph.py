@@ -50,6 +50,10 @@ class CommunicationState:
     needs_chunking: bool = False
     log_enabled: bool = True
 
+    # Progress tracking
+    current_step: int = 0
+    total_steps: int = 11  # Base number of steps
+
     # Processed data
     validated_data: List[Dict[str, Any]] = None
     chunks: List[List[Dict[str, Any]]] = None

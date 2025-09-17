@@ -5,11 +5,14 @@ from config import (COLLABORATION_PATTERNS, CONFLICT_PATTERNS, CLARITY_PATTERNS,
 
 def evidence_collect(state):
     """Collect specific message examples that support the analysis findings."""
+    reporter = state.get_reporter()  # Create reporter once for all helper functions
+
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] EVIDENCE_COLLECT: Gathering supporting examples...")
 
     if not state.validated_data or not hasattr(state, 'merged_insights'):
-        if not state.errors:
-            state.errors = []
-        state.errors.append("evidence_collect: Missing validated data or merged insights")
+        state.add_error("evidence_collect: Missing validated data or merged insights")
         return state
 
     try:
@@ -103,12 +106,11 @@ def evidence_collect(state):
 
         # Store evidence in state
         state.evidence = evidence
+        state.add_log(f"✓ [{state.current_step}/{state.total_steps}] EVIDENCE_COLLECT: {evidence['collection_summary']['total_messages_analyzed']} messages analyzed for evidence")
 
     except Exception as e:
-        if not state.errors:
-            state.errors = []
-        state.errors.append(f"evidence_collect: Failed to collect evidence - {str(e)}")
-        print(f"Error: {e}")
+        state.add_error(f"evidence_collect: Failed to collect evidence - {str(e)}")
+        state.add_log(f"✗ [{state.current_step}/{state.total_steps}] EVIDENCE_COLLECT: Failed to collect evidence - {str(e)}")
 
     return state
 

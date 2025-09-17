@@ -6,10 +6,12 @@ from config import (NORMALIZATION_SPEAKER_FIELDS, NORMALIZATION_TEXT_FIELDS,
                    NORMALIZATION_MIN_TEXT_LENGTH, NORMALIZATION_TIMESTAMP_FORMATS)
 
 def normalize_structured(state):
+    """Clean and normalize structured input data."""
     reporter = state.get_reporter()  # Create reporter once for all helper functions
 
-    """Clean and normalize structured input data."""
-    state.add_log("Normalizing structured data...")
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] NORMALIZATION: Cleaning and standardizing data...")
     if not state.structured_data:
         state.add_error("No structured data to normalize")
         return state
@@ -31,7 +33,7 @@ def normalize_structured(state):
 
     # Set validated_data for the next step
     state.validated_data = normalized_data
-    state.add_log(f"Normalized {len(normalized_data)} items. State updated.")
+    state.add_log(f"✓ [{state.current_step}/{state.total_steps}] NORMALIZATION: {len(normalized_data)} items normalized successfully")
     return state
 
 def _normalize_single_item(item, reporter):

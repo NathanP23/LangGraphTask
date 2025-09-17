@@ -4,11 +4,14 @@ from config import (DEFAULT_CHUNK_INSIGHTS, DEFAULT_EMOTIONAL_DISTRIBUTION,
 
 def merge_chunks(state):
     """Merge insights from multiple conversation chunks into unified analysis."""
+    reporter = state.get_reporter()  # Create reporter once for all helper functions
+
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] MERGE_CHUNKS: Consolidating insights across chunks...")
 
     if not hasattr(state, 'llm_insights') or not state.llm_insights:
-        if not state.errors:
-            state.errors = []
-        state.errors.append("merge_chunks: No LLM insights available to merge")
+        state.add_error("merge_chunks: No LLM insights available to merge")
         return state
 
     try:
@@ -97,12 +100,11 @@ def merge_chunks(state):
 
         # Store merged insights in state
         state.merged_insights = merged_insights
+        state.add_log(f"✓ [{state.current_step}/{state.total_steps}] MERGE_CHUNKS: {len(state.llm_insights)} chunks merged into unified insights")
 
     except Exception as e:
-        if not state.errors:
-            state.errors = []
-        state.errors.append(f"merge_chunks: Failed to merge insights - {str(e)}")
-        print(f"Error: {e}")
+        state.add_error(f"merge_chunks: Failed to merge insights - {str(e)}")
+        state.add_log(f"✗ [{state.current_step}/{state.total_steps}] MERGE_CHUNKS: Failed to merge insights - {str(e)}")
 
     return state
 

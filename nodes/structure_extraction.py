@@ -11,7 +11,9 @@ def structure_from_text(state):
     """Convert raw text into structured JSON format using LLM."""
     reporter = state.get_reporter()  # Create reporter once for all helper functions
 
-    state.add_log("Converting raw text to structured format using LLM...")
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] STRUCTURE_EXTRACTION: Converting raw text to structured format...")
 
     if not state.raw_input:
         state.add_error("structure_from_text: No raw input to process")
@@ -55,14 +57,16 @@ def structure_from_text(state):
         structured_data = result.get("messages", [])
 
         if structured_data:
-            state.add_log(f"Successfully extracted {len(structured_data)} messages from text")
             state.structured_data = structured_data
             state.is_raw_text = False  # Now it's structured
+            state.add_log(f"✓ [{state.current_step}/{state.total_steps}] STRUCTURE_EXTRACTION: {len(structured_data)} messages extracted from text")
         else:
             state.add_error("structure_from_text: Failed to extract messages from LLM response")
+            state.add_log(f"✗ [{state.current_step}/{state.total_steps}] STRUCTURE_EXTRACTION: Failed to extract messages from LLM response")
 
     except Exception as e:
         state.add_error(f"structure_from_text: LLM call failed - {str(e)}")
+        state.add_log(f"✗ [{state.current_step}/{state.total_steps}] STRUCTURE_EXTRACTION: LLM call failed - {str(e)}")
     return state
 
 def _create_structure_prompt(raw_text, reporter):

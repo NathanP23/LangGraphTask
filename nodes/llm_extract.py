@@ -22,16 +22,18 @@ class HealthInsights(BaseModel):
 
 def llm_extract(state):
     """Extract semantic insights from conversation chunks using LLM analysis."""
+    reporter = state.get_reporter()  # Create reporter once for all helper functions
 
-    print("Extracting insights using LLM...")
+    # Progress tracking
+    state.current_step += 1
+    state.add_log(f"[{state.current_step}/{state.total_steps}] LLM_EXTRACT: Analyzing conversation insights...")
 
     if not hasattr(state, 'chunks') or not state.chunks:
-        if not state.errors:
-            state.errors = []
-        state.errors.append("llm_extract: No chunks available for analysis")
+        state.add_error("llm_extract: No chunks available for analysis")
         return state
 
     try:
+        state.add_log("Initializing OpenAI client...")
         # Initialize OpenAI client
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -39,8 +41,9 @@ def llm_extract(state):
         chunk_insights = []
 
         for chunk_idx, chunk in enumerate(state.chunks):
+            state.add_log(f"Analyzing chunk {chunk_idx + 1}/{len(state.chunks)}...")
             # Create prompt for this chunk
-            prompt = _create_analysis_prompt(chunk, chunk_idx)
+            prompt = _create_analysis_prompt(chunk, chunk_idx, reporter)
 
             # Use the JSON schema from config
             schema = HEALTH_INSIGHTS_JSON_SCHEMA
@@ -76,18 +79,17 @@ def llm_extract(state):
 
         # Store insights in state
         state.llm_insights = chunk_insights
+        state.add_log(f"✓ [{state.current_step}/{state.total_steps}] LLM_EXTRACT: {len(chunk_insights)} chunks analyzed successfully")
 
     except Exception as e:
-        if not state.errors:
-            state.errors = []
-        state.errors.append(f"llm_extract: LLM analysis failed - {str(e)}")
-        print(f"Error: {e}")
+        state.add_error(f"llm_extract: LLM analysis failed - {str(e)}")
+        state.add_log(f"✗ [{state.current_step}/{state.total_steps}] LLM_EXTRACT: LLM analysis failed - {str(e)}")
 
     return state
 
-def _create_analysis_prompt(chunk, chunk_idx):
+def _create_analysis_prompt(chunk, chunk_idx, reporter):
     """Create analysis prompt for a conversation chunk."""
-    print(f"Creating analysis prompt for chunk {chunk_idx + 1}...")
+    reporter.add_log(f"Creating analysis prompt for chunk {chunk_idx + 1}...", 1, flush=True)
     # Format the conversation messages
     formatted_messages = []
     for msg in chunk:
