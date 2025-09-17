@@ -1,5 +1,26 @@
 import json
+import os
+from datetime import datetime
+from dotenv import load_dotenv
 from comm_health_graph import create_communication_health_graph, CommunicationState
+
+# Load environment variables from .env file
+load_dotenv()
+
+def save_report_to_file(report, case_name, timestamp=None):
+    """Save a report to a JSON file."""
+    if timestamp is None:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    filename = f"reports/{case_name}_{timestamp}.json"
+
+    # Create reports directory if it doesn't exist
+    os.makedirs("reports", exist_ok=True)
+
+    with open(filename, 'w') as f:
+        json.dump(report, f, indent=2)
+
+    print(f"  Report saved to: {filename}")
 from nodes.input_detection import detect_input_type
 from nodes.normalization import normalize_structured
 from nodes.validation import validate_schema
@@ -237,6 +258,7 @@ def debug_three_cases():
             print(f"  Summary: {report1['summary'][:100]}...")
             print(f"  Overall score: {report1['overall_health']['score']} ({report1['overall_health']['label']})")
             print(f"  Dimensions: {list(report1['dimensions'].keys())}")
+            save_report_to_file(report1, "case1_structured_data")
     except Exception as e:
         print(f"Error: {e}")
 
@@ -254,7 +276,8 @@ def debug_three_cases():
     try:
         report2 = analyze_raw_text(raw_text)
         print(f"Success: Got report")
-        # print(f"Report keys: {list(report2.keys()) if report2 else 'None'}")
+        if report2:
+            save_report_to_file(report2, "case2_raw_text")
     except Exception as e:
         print(f"Error: {e}")
 
@@ -268,7 +291,8 @@ def debug_three_cases():
     try:
         report3a = analyze_communication_health(structured_data)
         print(f"Success: Auto-detected as structured, got report")
-        # print(f"Report keys: {list(report3a.keys()) if report3a else 'None'}")
+        if report3a:
+            save_report_to_file(report3a, "case3a_auto_structured")
     except Exception as e:
         print(f"Error: {e}")
 
@@ -281,7 +305,8 @@ def debug_three_cases():
     try:
         report3b = analyze_communication_health(raw_text)
         print(f"Success: Auto-detected as raw text, got report")
-        # print(f"Report keys: {list(report3b.keys()) if report3b else 'None'}")
+        if report3b:
+            save_report_to_file(report3b, "case3b_auto_raw_text")
     except Exception as e:
         print(f"Error: {e}")
 

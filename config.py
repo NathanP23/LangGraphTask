@@ -74,7 +74,7 @@ STRUCTURE_EXTRACTION_JSON_SCHEMA = {
                     "timestamp": {"type": ["string", "null"], "description": "ISO format timestamp if detectable, otherwise null"},
                     "type": {"type": "string", "description": "Type of communication: message, meeting, email, chat"}
                 },
-                "required": ["speaker", "text", "type"],
+                "required": ["speaker", "text", "timestamp", "type"],
                 "additionalProperties": False
             }
         }
@@ -272,6 +272,106 @@ ANALYSIS_GUIDELINES = [
     "Focus on actionable insights for improving communication health",
     "Rate clarity and engagement on realistic scales (5-7 is average, 8+ is excellent)"
 ]
+
+# Health analysis prompt template
+HEALTH_ANALYSIS_PROMPT_TEMPLATE = """You are analyzing communication health in a workplace conversation.
+
+CONVERSATION CHUNK #{chunk_idx}:
+{conversation_text}
+
+ANALYSIS TASK:
+Analyze this conversation segment for communication health indicators. Focus on:
+
+1. **Tone Analysis**: Identify tone descriptors (professional, friendly, tense, supportive, etc.)
+2. **Clarity**: Rate how clear and understandable the communication is (0-10)
+3. **Responsiveness**: Identify patterns in how people respond to each other
+4. **Engagement**: Rate overall participant engagement level (0-10)
+5. **Conflict Detection**: Look for signs of tension, disagreement, or conflict
+6. **Collaboration**: Identify positive teamwork and collaboration indicators
+7. **Communication Issues**: Spot problems like unclear requests, ignored questions, etc.
+8. **Positive Patterns**: Identify healthy communication behaviors
+9. **Key Topics**: Extract the main subjects being discussed
+10. **Emotional Tone**: Count messages with positive, negative, or neutral emotional tone
+
+IMPORTANT GUIDELINES:
+- Be objective and evidence-based in your analysis
+- Look for subtle patterns, not just obvious ones
+- Consider context and workplace communication norms
+- Focus on actionable insights for improving communication health
+- Rate clarity and engagement on realistic scales (5-7 is average, 8+ is excellent)
+
+The output will be automatically structured according to the required schema."""
+
+# Health insights JSON schema
+HEALTH_INSIGHTS_JSON_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "tone_indicators": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of tone descriptors found in messages"
+        },
+        "clarity_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "Clarity rating 0-10"
+        },
+        "responsiveness_patterns": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Patterns of response behavior observed"
+        },
+        "engagement_level": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "Overall engagement level 0-10"
+        },
+        "conflict_indicators": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Signs of tension or conflict"
+        },
+        "collaboration_indicators": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Signs of positive collaboration"
+        },
+        "communication_issues": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Specific communication problems identified"
+        },
+        "positive_patterns": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Healthy communication patterns observed"
+        },
+        "key_topics": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Main topics discussed in this chunk"
+        },
+        "emotional_indicators": {
+            "type": "object",
+            "properties": {
+                "positive": {"type": "integer", "minimum": 0},
+                "negative": {"type": "integer", "minimum": 0},
+                "neutral": {"type": "integer", "minimum": 0}
+            },
+            "required": ["positive", "negative", "neutral"],
+            "additionalProperties": False,
+            "description": "Emotional tone counts (positive, negative, neutral)"
+        }
+    },
+    "required": [
+        "tone_indicators", "clarity_score", "responsiveness_patterns",
+        "engagement_level", "conflict_indicators", "collaboration_indicators",
+        "communication_issues", "positive_patterns", "key_topics", "emotional_indicators"
+    ],
+    "additionalProperties": False
+}
 
 # =============================================================================
 # 9. MERGE CHUNKS CONFIG (merge_chunks)
