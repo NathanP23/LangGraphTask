@@ -16,6 +16,27 @@ from nodes.evidence_collect import evidence_collect
 from nodes.calibrate_scores import calibrate_scores
 from nodes.reporting import generate_report, finalize_output
 
+class StateReporter:
+    """Interface for reporting logs and errors from helper functions.
+
+    Security Design:
+    - Provides controlled access to state logging without exposing full state
+    - Prevents helper functions from accidentally modifying critical state fields
+    - Follows principle of least privilege - only exposes what's needed
+    - Maintains clear separation between main functions (full state access)
+      and helper functions (logging-only access)
+    """
+    def __init__(self, state):
+        self.__state = state  # Private: Use double underscore for name mangling
+
+    def add_log(self, message: str, indent_level: int = 0, flush: bool = False):
+        """Add log message with controlled access."""
+        self.__state.add_log(message, indent_level, flush)
+
+    def add_error(self, message: str, indent_level: int = 0):
+        """Add error message with controlled access."""
+        self.__state.add_error(message, indent_level)
+
 @dataclass
 class CommunicationState:
     """Shared state passed between all nodes in the graph."""
@@ -27,6 +48,7 @@ class CommunicationState:
     is_raw_text: bool = False
     has_timestamps: bool = False
     needs_chunking: bool = False
+    log_enabled: bool = True
 
     # Processed data
     validated_data: List[Dict[str, Any]] = None
@@ -45,17 +67,52 @@ class CommunicationState:
     # Final output
     report: Dict[str, Any] = None
     errors: List[str] = None
+    logs: List[str] = None
+
+    def add_error(self, error_message: str, indent_level: int = 0):
+        """Add error to state and print it.
+
+        Args:
+            error_message: The error message to log
+            indent_level: Number of '    ' indentations to add before the message
+        """
+        if not self.errors:
+            self.errors = []
+        self.errors.append(error_message)
+        print(f"{'    ' * indent_level}ERROR: {error_message}")
+
+    def add_log(self, log_message: str, indent_level: int = 0, flush: bool = False):
+        """Add log to state and print it if logging is enabled.
+
+        Args:
+            log_message: The message to log
+            indent_level: Number of '    ' indentations to add before the message
+            flush: If True, print with carriage return and flush for temporary messages
+        """
+        if self.log_enabled:
+            if not self.logs:
+                self.logs = []
+            # Create indented message
+            self.logs.append(log_message)
+
+            if flush:
+                print(f"    " * indent_level + log_message.ljust(50), end='\r', flush=True)
+            else:
+                print("    " * indent_level + log_message)
+
+    def get_reporter(self):
+        """Return a reporter interface for helper functions."""
+        return StateReporter(self)
 
 def should_structure_from_text(state: CommunicationState) -> str:
     """Route to text structuring if input is raw text."""
 
-    print(f"Routing based on input type: {'structure_from_text' if state.is_raw_text else 'normalize_structured'}")
-
+    state.add_log(f"Routing based on input type: {'structure_from_text' if state.is_raw_text else 'normalize_structured'}")
     return "structure_from_text" if state.is_raw_text else "normalize_structured"
 
 def should_remediate(state: CommunicationState) -> str:
     """Route to remediation if validation failed."""
-    print(f"Routing based on validation errors: {'remediation_llm' if state.errors and any('validation' in error for error in state.errors) else 'dedupe_threads'}")
+    state.add_log(f"Routing based on validation errors: {'remediation_llm' if state.errors and any('validation' in error for error in state.errors) else 'dedupe_threads'}")
     if state.errors and any("validation" in error for error in state.errors):
         return "remediation_llm"
     return "dedupe_threads"
