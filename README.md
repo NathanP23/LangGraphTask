@@ -245,6 +245,271 @@ LangGraphTask/
 └── README.md                       # This comprehensive documentation
 ```
 
+## Detailed Function Breakdown
+
+```{.plaintext}
+LangGraphTask/
+├── main.py
+│   ├── save_report_to_file()           # Save analysis reports to JSON files with timestamps
+│   ├── test_input_detection()          # Test input type detection with sample data
+│   ├── test_normalization()            # Test data normalization process
+│   ├── test_validation()               # Test schema validation logic
+│   ├── test_statistics()               # Test statistics calculation
+│   ├── test_structure_extraction()     # Test raw text to JSON conversion
+│   └── debug_three_cases()             # Run comprehensive test suite for all input methods
+│
+├── comm_health_graph.py
+│   ├── StateReporter                   # Secure logging interface for helper functions
+│   ├── CommunicationState              # Shared state object passed between nodes
+│   ├── should_structure_from_text()    # Route to text structuring vs normalization
+│   ├── should_remediate()              # Route to remediation if validation fails
+│   ├── has_timestamps()                # Route to appropriate stats calculation
+│   ├── create_communication_health_graph() # Build and compile LangGraph workflow
+│   ├── analyze_raw_text()              # Public API for raw text analysis
+│   ├── analyze_structured_data()       # Public API for structured data analysis
+│   └── analyze_communication_health()  # Main entry point with auto-detection
+│
+├── config.py                           # Centralized configuration (no functions)
+│
+├── nodes/input_detection.py
+│   ├── detect_input_type()             # Determine if input is raw text or structured data
+│   ├── _contains_timestamps()          # Check raw text for timestamp patterns
+│   └── _has_timestamp_fields()         # Check structured data for timestamp fields
+│
+├── nodes/structure_extraction.py
+│   ├── structure_from_text()           # Convert raw text to structured JSON using LLM
+│   └── _create_structure_prompt()      # Generate prompt for LLM text structuring
+│
+├── nodes/normalization.py
+│   ├── normalize_structured()          # Clean and standardize structured input data
+│   ├── _normalize_single_item()        # Normalize individual communication item
+│   ├── _extract_timestamp()            # Extract timestamp from various field names
+│   ├── _parse_timestamp()              # Parse timestamp string to ISO format
+│   ├── _extract_speaker()              # Extract speaker name from various fields
+│   ├── _extract_text()                 # Extract text content from various fields
+│   └── _extract_type()                 # Extract communication type from various fields
+│
+├── nodes/validation.py
+│   ├── validate_schema()               # Validate data against expected schema
+│   ├── _validate_single_item()         # Validate individual communication item
+│   ├── _is_valid_timestamp()           # Check timestamp format validity
+│   ├── remediation_llm()               # Use LLM to fix validation errors
+│   ├── _fix_data_with_llm()            # Call LLM to repair problematic data
+│   └── _create_remediation_prompt()    # Generate prompt for LLM data fixing
+│
+├── nodes/preprocessing.py
+│   ├── dedupe_threads()                # Remove duplicate messages and collapse quotes
+│   ├── _clean_for_dedup()              # Clean text for deduplication comparison
+│   ├── _remove_quoted_content()        # Remove quoted content from email/message text
+│   └── chunk_if_needed()               # Split large conversations into manageable chunks
+│
+├── nodes/statistics.py
+│   ├── basic_stats_full()              # Calculate complete statistics with timestamps
+│   ├── basic_stats_text()              # Calculate statistics without timestamp data
+│   ├── _calculate_base_stats()         # Count messages, words, speakers, questions
+│   ├── _count_questions()              # Detect and count question patterns
+│   ├── _calculate_participation()      # Analyze participation balance across speakers
+│   └── _calculate_response_times()     # Calculate response latencies between speakers
+│
+├── nodes/llm_extract.py
+│   ├── llm_extract()                   # Extract semantic insights using LLM analysis
+│   └── _create_analysis_prompt()       # Generate prompt for LLM health analysis
+│
+├── nodes/merge_chunks.py
+│   ├── merge_chunks()                  # Combine insights from multiple conversation chunks
+│   ├── _merge_insights()               # Aggregate LLM insights across chunks
+│   ├── _merge_emotional_indicators()   # Combine emotional tone counts
+│   ├── _merge_lists()                  # Merge and deduplicate list fields
+│   ├── _calculate_weighted_average()   # Compute weighted averages for numeric scores
+│   └── _calculate_health_flags()       # Determine overall health indicators
+│
+├── nodes/evidence_collect.py
+│   ├── evidence_collect()              # Gather supporting evidence for health scores
+│   ├── _collect_collaboration_evidence() # Find examples of positive collaboration
+│   ├── _collect_conflict_evidence()    # Find examples of tension or conflict
+│   ├── _collect_clarity_evidence()     # Find examples of clear/unclear communication
+│   ├── _collect_engagement_evidence()  # Find examples of high/low engagement
+│   ├── _collect_responsiveness_evidence() # Find examples of response patterns
+│   ├── _count_pattern_matches()        # Count regex pattern matches in text
+│   └── _get_examples_with_context()    # Extract text examples with speaker context
+│
+├── nodes/calibrate_scores.py
+│   ├── calibrate_scores()              # Normalize and weight final health scores
+│   ├── _calculate_participation_score() # Score participation balance
+│   ├── _calculate_clarity_score()      # Score communication clarity
+│   ├── _calculate_engagement_score()   # Score overall engagement level
+│   ├── _calculate_responsiveness_score() # Score response timeliness and patterns
+│   ├── _calculate_collaboration_score() # Score collaboration vs conflict
+│   ├── _calculate_overall_health()     # Compute weighted overall health score
+│   ├── _calculate_confidence_score()   # Assess confidence in analysis results
+│   └── _generate_recommendations()     # Create actionable improvement suggestions
+│
+└── nodes/reporting.py
+    ├── generate_report()               # Create natural language health report
+    ├── finalize_output()               # Format and structure final JSON output
+    ├── _create_summary()               # Generate executive summary text
+    ├── _extract_key_content()          # Extract decisions and action items
+    ├── _format_dimension_scores()      # Format health dimension scores with descriptions
+    ├── _categorize_health_level()      # Determine health category (excellent/good/fair/poor)
+    └── _add_metadata()                 # Add analysis metadata and timestamps
+```
+
+## Function Call Flow
+
+```{.plaintext}
+                    User Entry Points
+                          ↓
+    ┌─────────────────────────────────────────────────────────┐
+    │ analyze_communication_health() [auto-detect]           │
+    │ analyze_raw_text() [force raw]                         │
+    │ analyze_structured_data() [force structured]           │
+    └─────────────────────┬───────────────────────────────────┘
+                          ↓
+        ┌─────────────────────────────────────┐
+        │ create_communication_health_graph() │
+        └─────────────────┬───────────────────┘
+                          ↓
+                 ┌─────────────────┐
+                 │ LangGraph Flow  │ ← State management via CommunicationState
+                 └─────────────────┘
+                          ↓
+            ┌─────────────────────────────────┐
+            │ detect_input_type()             │
+            │ ├── _contains_timestamps()      │ ← for raw text
+            │ └── _has_timestamp_fields()     │ ← for structured data
+            └─────────────┬───────────────────┘
+                          ↓
+                ┌─────────────────────┐
+                │ Conditional Routing │
+                └─────────────────────┘
+                ↓ raw text    ↓ structured
+    ┌───────────────────────┐ ┌─────────────────────────┐
+    │ structure_from_text() │ │ normalize_structured()  │
+    │ └── _create_structure │ │ ├── _normalize_single_  │
+    │     _prompt()         │ │ │   _item()             │
+    └───────────────────────┘ │ ├── _extract_timestamp()│
+                              │ ├── _parse_timestamp()  │
+                              │ ├── _extract_speaker()  │
+                              │ ├── _extract_text()     │
+                              │ └── _extract_type()     │
+                              └─────────────────────────┘
+                ↓                           ↓
+                └─────────────┬─────────────┘
+                              ↓
+                ┌─────────────────────────────────┐
+                │ validate_schema()               │
+                │ ├── _validate_single_item()     │
+                │ └── _is_valid_timestamp()       │
+                └─────────────┬───────────────────┘
+                              ↓
+                ┌─────────────────────────────────┐
+                │ Validation Routing              │
+                └─────────────────────────────────┘
+                ↓ has errors          ↓ valid
+    ┌───────────────────────┐ ┌─────────────────┐
+    │ remediation_llm()     │ │ dedupe_threads()│
+    │ ├── _fix_data_with_  │ │ ├── _clean_for_ │
+    │ │   _llm()           │ │ │   _dedup()    │
+    │ └── _create_         │ │ └── _remove_    │
+    │     _remediation_    │ │     _quoted_    │
+    │     _prompt()        │ │     _content()  │
+    └───────────┬─────────┘ └─────────────────┘
+                ↓                     ↓
+                └─────────────┬───────┘
+                              ↓
+                ┌─────────────────────────────────┐
+                │ chunk_if_needed()               │ ← part of preprocessing.py
+                └─────────────┬───────────────────┘
+                              ↓
+                ┌─────────────────────────────────┐
+                │ Stats Routing                   │
+                └─────────────────────────────────┘
+                ↓ timestamps      ↓ no timestamps
+    ┌───────────────────────┐ ┌─────────────────────┐
+    │ basic_stats_full()    │ │ basic_stats_text()  │
+    │ ├── _calculate_base_  │ │ ├── _calculate_base_│
+    │ │   _stats()          │ │ │   _stats()        │
+    │ ├── _count_questions()│ │ ├── _count_questions│
+    │ ├── _calculate_       │ │ │   ()              │
+    │ │   _participation()  │ │ └── _calculate_     │
+    │ └── _calculate_       │ │     _participation()│
+    │     _response_times() │ │                     │
+    └───────────────────────┘ └─────────────────────┘
+                ↓                           ↓
+                └─────────────┬─────────────┘
+                              ↓
+                ┌─────────────────────────────────┐
+                │ llm_extract()                   │
+                │ └── _create_analysis_prompt()   │
+                └─────────────┬───────────────────┘
+                              ↓
+                ┌─────────────────────────────────┐
+                │ merge_chunks()                  │
+                │ ├── _merge_insights()           │
+                │ ├── _merge_emotional_indicators│
+                │ ├── _merge_lists()              │
+                │ ├── _calculate_weighted_average│
+                │ └── _calculate_health_flags()   │
+                └─────────────┬───────────────────┘
+                              ↓
+                ┌─────────────────────────────────┐
+                │ evidence_collect()              │
+                │ ├── _collect_collaboration_     │
+                │ │   _evidence()                 │
+                │ ├── _collect_conflict_evidence()│
+                │ ├── _collect_clarity_evidence() │
+                │ ├── _collect_engagement_        │
+                │ │   _evidence()                 │
+                │ ├── _collect_responsiveness_    │
+                │ │   _evidence()                 │
+                │ ├── _count_pattern_matches()    │
+                │ └── _get_examples_with_context()│
+                └─────────────┬───────────────────┘
+                              ↓
+                ┌─────────────────────────────────┐
+                │ calibrate_scores()              │
+                │ ├── _calculate_participation_   │
+                │ │   _score()                    │
+                │ ├── _calculate_clarity_score()  │
+                │ ├── _calculate_engagement_score│
+                │ ├── _calculate_responsiveness_  │
+                │ │   _score()                    │
+                │ ├── _calculate_collaboration_   │
+                │ │   _score()                    │
+                │ ├── _calculate_overall_health() │
+                │ ├── _calculate_confidence_score│
+                │ └── _generate_recommendations() │
+                └─────────────┬───────────────────┘
+                              ↓
+                ┌─────────────────────────────────┐
+                │ generate_report()               │
+                │ ├── _create_summary()           │
+                │ ├── _extract_key_content()      │
+                │ ├── _format_dimension_scores()  │
+                │ └── _categorize_health_level()  │
+                └─────────────┬───────────────────┘
+                              ↓
+                ┌─────────────────────────────────┐
+                │ finalize_output()               │
+                │ └── _add_metadata()             │
+                └─────────────┬───────────────────┘
+                              ↓
+                      Final JSON Report
+
+State Flow:
+- CommunicationState object passed through all nodes
+- StateReporter provides controlled logging access
+- Each node modifies specific state fields:
+  • raw_input → structured_data → validated_data → chunks
+  • basic_stats → llm_insights → merged_insights → evidence
+  • calibrated_scores → report (final output)
+
+Routing Functions:
+- should_structure_from_text() → routes based on is_raw_text flag
+- should_remediate() → routes based on validation errors
+- has_timestamps() → routes based on timestamp presence
+```
+
 ## Testing with Sample Data
 
 The main.py script includes comprehensive testing of all input methods:
