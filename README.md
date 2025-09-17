@@ -223,70 +223,83 @@ print(json.dumps(report, indent=2))
 LangGraphTask/
 ├── main.py                          # Entry point - demo/test runner
 ├── comm_health_graph.py             # Main graph construction and public API
-├── config.py                       # Configuration parameters and hardcoded values
-├── requirements.txt                 # Dependencies (langgraph, langchain, openai, etc.)
+├── config.py                       # Centralized configuration organized by LangGraph node flow
+├── requirements.txt                 # Dependencies (langgraph, openai, python-dotenv)
 ├── .env.example                     # Template for API keys
-├── nodes/
-│   ├── input_detection.py          # Route raw text vs structured input
-│   ├── structure_extraction.py     # structure_from_text node
-│   ├── normalization.py            # normalize_structured node
-│   ├── validation.py               # validate_schema + remediation_llm
-│   ├── preprocessing.py            # dedupe_threads, chunk_if_needed
-│   ├── statistics.py               # basic_stats_full/text (objective metrics)
-│   ├── llm_extraction.py           # llm_extract (semantic analysis)
-│   ├── merging.py                  # merge_chunks, evidence_collect
-│   ├── scoring.py                  # calibrate_scores
-│   └── reporting.py                # generate_report, finalize_output
-├── schemas/
-│   ├── communication_schema.py     # Input validation schemas
-│   └── health_report_schema.py     # Output format definitions
-├── utils/
-│   ├── text_utils.py               # Cleaning, deduplication helpers
-│   ├── time_utils.py               # Timestamp parsing utilities
-│   └── scoring_utils.py            # Score calculation formulas
-├── sample_data/
-│   ├── email_thread.json           # Sample email conversation
+├── nodes/                           # LangGraph workflow nodes
+│   ├── input_detection.py          # detect_input_type - route raw text vs structured input
+│   ├── structure_extraction.py     # structure_from_text - LLM converts text to JSON
+│   ├── normalization.py            # normalize_structured - clean and standardize fields
+│   ├── validation.py               # validate_schema + remediation_llm - data validation/fixing
+│   ├── preprocessing.py            # dedupe_threads + chunk_if_needed - data preprocessing
+│   ├── statistics.py               # basic_stats_full/text - objective metrics calculation
+│   ├── llm_extract.py              # llm_extract - semantic analysis via LLM
+│   ├── merge_chunks.py             # merge_chunks - combine insights from multiple chunks
+│   ├── evidence_collect.py         # evidence_collect - gather supporting evidence
+│   ├── calibrate_scores.py         # calibrate_scores - normalize and weight scores
+│   └── reporting.py                # generate_report + finalize_output - create final report
+├── sample_data/                     # Test data samples
 │   ├── meeting_transcript.json     # Sample meeting data
 │   └── raw_text_example.txt        # Unstructured text sample
+├── reports/                         # Generated analysis reports (created at runtime)
 └── README.md                       # This comprehensive documentation
 ```
 
 ## Testing with Sample Data
 
+The main.py script includes comprehensive testing of all input methods:
+
 ```bash
-# Test with email thread
-python -c "
-import json
+# Run the complete test suite
+python main.py
+
+# This tests all 4 scenarios:
+# 1. analyze_structured_data() with meeting transcript
+# 2. analyze_raw_text() with unstructured text
+# 3. analyze_communication_health() auto-detecting structured data
+# 4. analyze_communication_health() auto-detecting raw text
+
+# All reports are saved to reports/ directory with timestamps
+```
+
+**Manual Testing:**
+```python
 from comm_health_graph import analyze_communication_health
 
-with open('sample_data/email_thread.json') as f:
-    data = json.load(f)
-    
-report = analyze_communication_health(data)
+# Auto-detect input type (recommended)
+with open('sample_data/raw_text_example.txt') as f:
+    raw_text = f.read()
+
+report = analyze_communication_health(raw_text)
 print(json.dumps(report, indent=2))
-"
 ```
 
 ## Extending the Analysis
 
 ### Adding New Metrics
 
-1. Modify `basic_stats()` for deterministic calculations
-2. Update `llm_extract()` JSON schema for new LLM-based features  
-3. Adjust scoring weights in `aggregate_scores()`
+1. **Deterministic metrics**: Add calculations to `nodes/statistics.py`
+2. **LLM-based metrics**: Update JSON schema in `config.py` HEALTH_INSIGHTS_JSON_SCHEMA
+3. **Scoring**: Modify weights and formulas in `nodes/calibrate_scores.py`
+4. **Configuration**: Add new parameters to `config.py` organized by node
 
 ### Alternative LLM Providers
 
-Replace `ChatOpenAI` with `ChatAnthropic` or other LangChain-supported models:
+To use different LLM providers, update the OpenAI client calls in:
+- `nodes/structure_extraction.py`
+- `nodes/validation.py`
+- `nodes/llm_extract.py`
 
+Example for Anthropic Claude:
 ```python
-from langchain_anthropic import ChatAnthropic
-model = ChatAnthropic(model="claude-3-sonnet-20240229")
+# Replace OpenAI client with Anthropic
+from anthropic import Anthropic
+client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 ```
 
 ### Persistence
 
-Switch from `InMemorySaver` to `SqliteSaver` for persistent state:
+Switch from `MemorySaver` to `SqliteSaver` for persistent state:
 
 ```bash
 pip install langgraph-checkpoint-sqlite
@@ -294,7 +307,10 @@ pip install langgraph-checkpoint-sqlite
 
 ```python
 from langgraph.checkpoint.sqlite import SqliteSaver
-graph = builder.compile(checkpointer=SqliteSaver("checkpoints.db"))
+from comm_health_graph import create_communication_health_graph
+
+# Modify comm_health_graph.py to use SqliteSaver
+graph = workflow.compile(checkpointer=SqliteSaver("checkpoints.db"))
 ```
 
 ## Design Philosophy
