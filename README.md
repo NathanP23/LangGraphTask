@@ -95,13 +95,30 @@ The overall score combines these dimensions into a 0-100 health rating with acti
 
 ## Quick Start
 
-### 1. Install Dependencies
+### 1. Download and Setup Project
+
+```bash
+# Clone the repository
+git clone https://github.com/NathanP23/LangGraphTask.git
+cd LangGraphTask
+
+# Create and activate virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+```
+
+### 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Set API Key
+### 3. Set API Key
 
 ```bash
 cp .env.example .env
@@ -109,13 +126,13 @@ cp .env.example .env
 export OPENAI_API_KEY="your-key-here"
 ```
 
-### 3. Run Analysis
+### 4. Run Analysis
 
 ```bash
 python main.py
 ```
 
-### 4. Use with Your Data
+### 5. Use with Your Data
 
 #### Option A: Raw Text Input
 
